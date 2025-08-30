@@ -1,43 +1,6 @@
 import { NextResponse } from 'next/server';
 
 import { getCacheTime } from '@/lib/config';
-import { fetchDoubanData } from '@/lib/douban';
-
-interface DoubanDetailResponse {
-  id: string;
-  title: string;
-  poster: string;
-  rating?: {
-    average: number;
-    details?: { [key: string]: number };
-    max: number;
-    min: number;
-    stars: string;
-  };
-  year: string;
-  pubdates: string[];
-  directors: Array<{
-    id: string;
-    name: string;
-    alt: string;
-  }>;
-  writers: Array<{
-    id: string;
-    name: string;
-    alt: string;
-  }>;
-  casts: Array<{
-    id: string;
-    name: string;
-    alt: string;
-  }>;
-  genres: string[];
-  countries: string[];
-  languages: string[];
-  episodes_count?: number;
-  durations: string[];
-  summary: string;
-}
 
 export const runtime = 'nodejs';
 
@@ -190,7 +153,7 @@ function parseDoubanDetails(html: string, id: string) {
   console.log(`[Douban Parse] 开始解析 ID: ${id}, HTML 长度: ${html.length}`);
   
   // 安全提取函数
-  const safeExtract = (extractName: string, extractFn: () => any, defaultValue: any = '') => {
+  const safeExtract = <T>(extractName: string, extractFn: () => T, defaultValue: T) => {
     try {
       const result = extractFn();
       console.log(`[Douban Parse] ${extractName}: 成功`);
@@ -291,7 +254,7 @@ function parseDoubanDetails(html: string, id: string) {
       if (!countryMatch) return [];
       
       return countryMatch[1].trim()
-        .split(/[\/、,]/)
+        .split(/[/、,]/)
         .map(c => c.trim())
         .filter(Boolean);
     }, []);
@@ -302,7 +265,7 @@ function parseDoubanDetails(html: string, id: string) {
       if (!languageMatch) return [];
       
       return languageMatch[1].trim()
-        .split(/[\/、,]/)
+        .split(/[/、,]/)
         .map(l => l.trim())
         .filter(Boolean);
     }, []);
