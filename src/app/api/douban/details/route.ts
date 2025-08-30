@@ -8,12 +8,21 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
 
-  console.log(`[Douban API] 请求开始 - ID: ${id}`);
+  console.log(`[Douban API] 请求开始 - ID: ${id}, ID类型: ${typeof id}, ID长度: ${id?.length}`);
 
   if (!id) {
     console.warn(`[Douban API] 缺少ID参数`);
     return NextResponse.json(
       { error: '缺少必要参数: id' },
+      { status: 400 }
+    );
+  }
+
+  // 验证ID格式
+  if (!/^\d+$/.test(id)) {
+    console.error(`[Douban API] 无效的ID格式: "${id}"`);
+    return NextResponse.json(
+      { error: '无效的豆瓣ID格式', id: id },
       { status: 400 }
     );
   }
